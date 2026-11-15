@@ -9,8 +9,22 @@ let ball;
 let paddle;
 
 const keys = {};
-document.addEventListener('keydown', e => { keys[e.code] = true; });
+document.addEventListener('keydown', e => {
+  keys[e.code] = true;
+  if (e.code === 'KeyR' && (state === 'gameover' || state === 'win')) {
+    resetGame();
+  }
+});
 document.addEventListener('keyup', e => { keys[e.code] = false; });
+
+function resetGame() {
+  state = 'ready';
+  lives = 3;
+  score = 0;
+  blocks = createBlocks();
+  paddle = new Paddle();
+  ball = new Ball();
+}
 
 loadSpritesheet(() => {
   paddle = new Paddle();
@@ -141,6 +155,45 @@ function draw() {
   }
   paddle.draw();
   ball.draw();
+  drawHUD();
+}
+
+function drawHUD() {
+  ctx.fillStyle = '#fff';
+  ctx.font = '18px monospace';
+  ctx.textAlign = 'left';
+  ctx.fillText(`Score: ${score}`, 10, 24);
+  ctx.textAlign = 'right';
+  ctx.fillText(`Vidas: ${'♥ '.repeat(lives).trim()}`, canvas.width - 10, 24);
+
+  if (state === 'ready') {
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.font = '20px monospace';
+    ctx.fillText('Pulsa ESPACIO para lanzar', canvas.width / 2, canvas.height - 15);
+  }
+
+  if (state === 'gameover') {
+    drawOverlay('GAME OVER', score);
+  }
+
+  if (state === 'win') {
+    drawOverlay('¡HAS GANADO!', score);
+  }
+}
+
+function drawOverlay(title, finalScore) {
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 48px monospace';
+  ctx.fillText(title, canvas.width / 2, canvas.height / 2 - 40);
+  ctx.font = '28px monospace';
+  ctx.fillText(`Score: ${finalScore}`, canvas.width / 2, canvas.height / 2 + 10);
+  ctx.font = '20px monospace';
+  ctx.fillStyle = '#aaa';
+  ctx.fillText('R para reiniciar', canvas.width / 2, canvas.height / 2 + 50);
 }
 
 class Paddle {
