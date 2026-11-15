@@ -145,7 +145,8 @@ function checkBallBlockCollisions() {
 }
 
 function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
   for (const b of blocks) {
     if (!b.dead) {
       drawSprite(ctx, `block_${b.color}`, b.x, b.y, b.w, b.h);
@@ -164,7 +165,10 @@ function drawHUD() {
   ctx.textAlign = 'left';
   ctx.fillText(`Score: ${score}`, 10, 24);
   ctx.textAlign = 'right';
-  ctx.fillText(`Vidas: ${'♥ '.repeat(lives).trim()}`, canvas.width - 10, 24);
+  ctx.fillText('Vidas:', canvas.width - 10 - lives * 22, 24);
+  for (let i = 0; i < lives; i++) {
+    drawSprite(ctx, 'ball', canvas.width - 10 - (lives - i) * 22 + 4, 10, 14, 14);
+  }
 
   if (state === 'ready') {
     ctx.textAlign = 'center';
