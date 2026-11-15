@@ -1,6 +1,6 @@
 # SPEC 01 — MVP jugable de Arkanoid
 
-**Estado:** Draft  
+**Estado:** Aprobado  
 **Depende de:** —  
 **Fecha:** 2026-11-15  
 **Objetivo:** Crear un Arkanoid jugable con paleta, bola, bloques, 3 vidas y puntuación en un único nivel fijo.
