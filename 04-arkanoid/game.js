@@ -45,6 +45,7 @@ function update(dt) {
 
   if (state === 'playing') {
     checkBallBlockCollisions();
+    checkBallPaddleCollision();
   }
 
   for (const b of blocks) {
@@ -56,6 +57,27 @@ function update(dt) {
       }
     }
   }
+}
+
+function checkBallPaddleCollision() {
+  if (ball.vy < 0) return;
+
+  const ballLeft = ball.x - ball.radius;
+  const ballRight = ball.x + ball.radius;
+  const ballTop = ball.y - ball.radius;
+  const ballBottom = ball.y + ball.radius;
+
+  if (ballRight < paddle.x || ballLeft > paddle.x + paddle.w) return;
+  if (ballBottom < paddle.y || ballTop > paddle.y + paddle.h) return;
+
+  ball.y = paddle.y - ball.radius;
+  ball.vy = -Math.abs(ball.vy);
+
+  const hitPos = (ball.x - paddle.x) / paddle.w;
+  const angle = (hitPos - 0.5) * 2;
+  const speed = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy);
+  ball.vx = speed * angle * 0.8;
+  ball.vy = -Math.sqrt(Math.max(speed * speed - ball.vx * ball.vx, speed * speed * 0.25));
 }
 
 function checkBallBlockCollisions() {
