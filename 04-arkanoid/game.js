@@ -35,11 +35,19 @@ function loop(ts) {
 
 function update(dt) {
   paddle.update(dt);
+  ball.update(dt);
+
+  if (state === 'ready' && keys['Space']) {
+    state = 'playing';
+    ball.vx = 250;
+    ball.vy = -400;
+  }
 }
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   paddle.draw();
+  ball.draw();
 }
 
 class Paddle {
@@ -81,9 +89,32 @@ class Ball {
   }
 
   update(dt) {
+    if (state === 'ready') {
+      this.x = paddle.x + paddle.w / 2;
+      this.y = paddle.y - this.radius;
+      return;
+    }
+    if (state !== 'playing') return;
+
+    this.x += this.vx * dt / 1000;
+    this.y += this.vy * dt / 1000;
+
+    if (this.x - this.radius < 0) {
+      this.x = this.radius;
+      this.vx = Math.abs(this.vx);
+    } else if (this.x + this.radius > canvas.width) {
+      this.x = canvas.width - this.radius;
+      this.vx = -Math.abs(this.vx);
+    }
+
+    if (this.y - this.radius < 0) {
+      this.y = this.radius;
+      this.vy = Math.abs(this.vy);
+    }
   }
 
   draw() {
+    drawSprite(ctx, 'ball', this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
   }
 }
 
