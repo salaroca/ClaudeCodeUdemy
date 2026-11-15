@@ -46,6 +46,16 @@ function update(dt) {
   if (state === 'playing') {
     checkBallBlockCollisions();
     checkBallPaddleCollision();
+
+    if (ball.y - ball.radius > canvas.height) {
+      lives--;
+      if (lives === 0) {
+        state = 'gameover';
+      } else {
+        state = 'ready';
+        ball.reset();
+      }
+    }
   }
 
   for (const b of blocks) {
