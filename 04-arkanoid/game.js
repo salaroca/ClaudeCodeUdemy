@@ -46,6 +46,9 @@ function update(dt) {
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (const b of blocks) {
+    if (!b.dead) drawSprite(ctx, `block_${b.color}`, b.x, b.y, b.w, b.h);
+  }
   paddle.draw();
   ball.draw();
 }
@@ -119,5 +122,29 @@ class Ball {
 }
 
 function createBlocks() {
-  return [];
+  const cols = 10;
+  const rows = 5;
+  const bw = 70;
+  const bh = 22;
+  const gapX = 5;
+  const gapY = 5;
+  const offsetX = (canvas.width - (cols * bw + (cols - 1) * gapX)) / 2;
+  const offsetY = 60;
+  const colors = ['red', 'hotpink', 'yellow', 'cyan', 'green'];
+  const result = [];
+
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      result.push({
+        x: offsetX + col * (bw + gapX),
+        y: offsetY + row * (bh + gapY),
+        w: bw,
+        h: bh,
+        color: colors[row],
+        dead: false,
+        explosion: null,
+      });
+    }
+  }
+  return result;
 }
