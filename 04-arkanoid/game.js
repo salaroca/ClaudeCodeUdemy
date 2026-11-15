@@ -47,6 +47,10 @@ function update(dt) {
     checkBallBlockCollisions();
     checkBallPaddleCollision();
 
+    if (blocks.every(b => b.dead)) {
+      state = 'win';
+    }
+
     if (ball.y - ball.radius > canvas.height) {
       lives--;
       if (lives === 0) {
