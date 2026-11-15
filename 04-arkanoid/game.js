@@ -42,12 +42,66 @@ function update(dt) {
     ball.vx = 250;
     ball.vy = -400;
   }
+
+  if (state === 'playing') {
+    checkBallBlockCollisions();
+  }
+
+  for (const b of blocks) {
+    if (b.explosion) {
+      b.explosion.timer += dt;
+      b.explosion.frame = Math.floor(b.explosion.timer / EXPLOSION_DURATION);
+      if (b.explosion.frame >= EXPLOSION_FRAMES[b.color].length) {
+        b.explosion = null;
+      }
+    }
+  }
+}
+
+function checkBallBlockCollisions() {
+  for (const b of blocks) {
+    if (b.dead) continue;
+
+    const bLeft = b.x;
+    const bRight = b.x + b.w;
+    const bTop = b.y;
+    const bBottom = b.y + b.h;
+
+    const ballLeft = ball.x - ball.radius;
+    const ballRight = ball.x + ball.radius;
+    const ballTop = ball.y - ball.radius;
+    const ballBottom = ball.y + ball.radius;
+
+    if (ballRight < bLeft || ballLeft > bRight || ballBottom < bTop || ballTop > bBottom) continue;
+
+    const overlapLeft = ballRight - bLeft;
+    const overlapRight = bRight - ballLeft;
+    const overlapTop = ballBottom - bTop;
+    const overlapBottom = bBottom - ballTop;
+
+    const minOverlap = Math.min(overlapLeft, overlapRight, overlapTop, overlapBottom);
+
+    if (minOverlap === overlapTop || minOverlap === overlapBottom) {
+      ball.vy = -ball.vy;
+    } else {
+      ball.vx = -ball.vx;
+    }
+
+    b.dead = true;
+    b.explosion = { frame: 0, timer: 0 };
+    score += 10;
+    break;
+  }
 }
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (const b of blocks) {
-    if (!b.dead) drawSprite(ctx, `block_${b.color}`, b.x, b.y, b.w, b.h);
+    if (!b.dead) {
+      drawSprite(ctx, `block_${b.color}`, b.x, b.y, b.w, b.h);
+    } else if (b.explosion) {
+      drawFrame(ctx, EXPLOSION_FRAMES[b.color][b.explosion.frame], b.x, b.y, b.w, b.h);
+    }
   }
   paddle.draw();
   ball.draw();
