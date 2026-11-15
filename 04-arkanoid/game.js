@@ -34,10 +34,12 @@ function loop(ts) {
 }
 
 function update(dt) {
+  paddle.update(dt);
 }
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  paddle.draw();
 }
 
 class Paddle {
@@ -50,9 +52,17 @@ class Paddle {
   }
 
   update(dt) {
+    if (keys['ArrowLeft']) {
+      this.x -= this.speed * dt / 1000;
+    }
+    if (keys['ArrowRight']) {
+      this.x += this.speed * dt / 1000;
+    }
+    this.x = Math.max(0, Math.min(canvas.width - this.w, this.x));
   }
 
   draw() {
+    drawSprite(ctx, 'paddle', this.x, this.y, this.w, this.h);
   }
 }
 
