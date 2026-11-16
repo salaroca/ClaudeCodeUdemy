@@ -1,6 +1,6 @@
 # SPEC 02 — Destrucción de bloques con animación de explosión
 
-**Estado:** Aprobado 
+**Estado:** Implementado 
 **Depende de:** SPEC 01  
 **Fecha:** 2026-11-16  
 **Objetivo:** Separar la muerte de un bloque (colisión) de su desaparición visual, mostrando la animación de explosión completa con soporte de múltiples explosiones en paralelo.
@@ -59,12 +59,12 @@ Cada paso deja el sistema funcional.
 
 ## Criterios de aceptación
 
-- [ ] Al golpear un bloque, deja de colisionar en el mismo frame en que es golpeado
-- [ ] La animación de explosión se reproduce completamente (4 frames, ~600 ms en total)
-- [ ] El bloque desaparece visualmente al terminar el último frame de la animación
-- [ ] Golpear dos bloques con un único rebote muestra dos explosiones simultáneas sin interferencia
-- [ ] La condición de victoria se activa aunque haya explosiones en curso
-- [ ] No hay errores en consola durante ni después de las explosiones
+- [x] Al golpear un bloque, deja de colisionar en el mismo frame en que es golpeado
+- [x] La animación de explosión se reproduce completamente (4 frames, ~600 ms en total)
+- [x] El bloque desaparece visualmente al terminar el último frame de la animación
+- [x] Golpear dos bloques con un único rebote muestra dos explosiones simultáneas sin interferencia
+- [x] La condición de victoria se activa aunque haya explosiones en curso
+- [x] No hay errores en consola durante ni después de las explosiones
 
 ---
 
