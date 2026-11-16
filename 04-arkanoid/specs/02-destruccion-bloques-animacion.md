@@ -1,6 +1,6 @@
 # SPEC 02 — Destrucción de bloques con animación de explosión
 
-**Estado:** Borrador  
+**Estado:** Aprobado 
 **Depende de:** SPEC 01  
 **Fecha:** 2026-11-16  
 **Objetivo:** Separar la muerte de un bloque (colisión) de su desaparición visual, mostrando la animación de explosión completa con soporte de múltiples explosiones en paralelo.

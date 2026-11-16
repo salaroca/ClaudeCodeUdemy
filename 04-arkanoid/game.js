@@ -85,6 +85,7 @@ function update(dt) {
       }
     }
   }
+  blocks = blocks.filter(b => !(b.dead && b.explosion === null));
 }
 
 function checkBallPaddleCollision() {
