@@ -3,7 +3,7 @@
 **Estado:** Implementado  
 **Depende de:** SPEC 01, SPEC 02  
 **Fecha:** 2026-11-18  
-**Objetivo:** Reproducir `ball-bounce.mp3` al rebotar en paredes y paleta, y añadir 5 niveles hardcodeados con progresión (pantalla intermedia, +1 vida por nivel, score acumulado).
+**Objetivo:** Reproducir `ball-bounce.mp3` al rebotar en paredes y paleta, reproducir `break-sound.mp3` al romper un bloque, extraer los layouts de nivel a `levels.js`, y añadir 5 niveles hardcodeados con progresión (pantalla intermedia, +1 vida por nivel, score acumulado).
 
 ---
 
@@ -12,8 +12,10 @@
 ### Dentro
 
 - `game.js`: lógica de sonido, datos de niveles, nuevo estado `'levelcomplete'`, HUD actualizado
+- `levels.js`: archivo separado que contiene únicamente `const LEVELS` e incluido en `index.html` antes de `game.js`
 - `ball-bounce.mp3` suena al rebotar en pared lateral, pared superior y paleta
-- 5 layouts de bloques distintos definidos como datos en `game.js`
+- `break-sound.mp3` suena al romper un bloque
+- 5 layouts de bloques distintos definidos en `levels.js`
 - Estado `'levelcomplete'` con pantalla "Level X Complete" y tecla Space/R para continuar
 - Al pasar de nivel: `lives++`, `score` acumulado, `currentLevel++`
 - Al completar el nivel 5: estado `'win'` (victoria final)
@@ -22,7 +24,7 @@
 
 ### Fuera
 
-- `break-sound.mp3` (ni perdida de vida ni otras acciones sonoras)
+- Audio al perder una vida
 - Control de volumen o mute
 - Dificultad creciente por nivel (velocidad de bola, etc.)
 - Niveles desde ficheros externos (JSON)
@@ -52,6 +54,7 @@ state  // 'ready' | 'playing' | 'levelcomplete' | 'gameover' | 'win'
 
 // Audio (instancias reutilizables)
 bounceSfx  // new Audio('assets/sounds/ball-bounce.mp3')
+breakSfx   // new Audio('assets/sounds/break-sound.mp3')
 ```
 
 Los layouts de los 5 niveles los decide el implementador; deben ser visualmente distintos (distintas formas, densidades y distribuciones de colores). Restricciones: máximo 10 columnas × 8 filas, mínimo 20 bloques por nivel.
@@ -62,9 +65,11 @@ Los layouts de los 5 niveles los decide el implementador; deben ser visualmente 
 
 Cada paso deja el sistema funcional.
 
-1. **Audio** — crear `bounceSfx = new Audio('assets/sounds/ball-bounce.mp3')`. Añadir función `playBounce()` que hace `bounceSfx.currentTime = 0; bounceSfx.play()`. Llamar `playBounce()` en los tres puntos de rebote: pared izquierda/derecha, pared superior, paleta.
+1. **Audio rebote** — crear `bounceSfx = new Audio('assets/sounds/ball-bounce.mp3')`. Añadir función `playBounce()` que hace `bounceSfx.currentTime = 0; bounceSfx.play()`. Llamar `playBounce()` en los tres puntos de rebote: pared izquierda/derecha, pared superior, paleta.
 
-2. **Datos de niveles** — definir `const LEVELS = [level1, level2, level3, level4, level5]` al inicio de `game.js`, donde cada `levelN` es un array 2D de colores/null. Los 5 layouts deben ser visualmente distintos.
+1b. **Audio rotura** — crear `breakSfx = new Audio('assets/sounds/break-sound.mp3')`. Añadir función `playBreak()` análoga. Llamarla en `checkBallBlockCollisions()` al marcar un bloque como muerto.
+
+2. **Archivo `levels.js`** — extraer `const LEVELS` de `game.js` a un nuevo archivo `levels.js`. Incluirlo en `index.html` antes de `game.js`.
 
 3. **`createBlocks(levelIndex)`** — modificar la función existente para aceptar un índice (0-based) y construir el array `blocks` a partir de `LEVELS[levelIndex]`. Las celdas `null` se saltan.
 
@@ -88,7 +93,9 @@ Cada paso deja el sistema funcional.
 - [X] `ball-bounce.mp3` suena al rebotar en pared derecha
 - [X] `ball-bounce.mp3` suena al rebotar en pared superior (techo)
 - [X] `ball-bounce.mp3` suena al rebotar en la paleta
-- [X] No suena ningún audio al romper un bloque ni al perder una vida
+- [X] `break-sound.mp3` suena al romper un bloque
+- [X] No suena ningún audio al perder una vida
+- [X] Los layouts de nivel están en `levels.js`, no en `game.js`
 - [X] Existen 5 niveles con layouts visualmente distintos (distinta forma/densidad/colores)
 - [X] Al destruir todos los bloques de los niveles 1–4 aparece pantalla "Level X Complete"
 - [X] La pantalla de nivel completado muestra el número de nivel correcto
