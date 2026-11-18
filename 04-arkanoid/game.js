@@ -1,9 +1,16 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+const bounceSfx = new Audio('assets/sounds/ball-bounce.mp3');
+function playBounce() {
+  bounceSfx.currentTime = 0;
+  bounceSfx.play().catch(() => {});
+}
+
 let state = 'ready';
 let lives = 3;
 let score = 0;
+let currentLevel = 1;
 let blocks = [];
 let ball;
 let paddle;
@@ -21,7 +28,8 @@ function resetGame() {
   state = 'ready';
   lives = 3;
   score = 0;
-  blocks = createBlocks();
+  currentLevel = 1;
+  blocks = createBlocks(0);
   paddle = new Paddle();
   ball = new Ball();
 }
@@ -29,7 +37,7 @@ function resetGame() {
 loadSpritesheet(() => {
   paddle = new Paddle();
   ball = new Ball();
-  blocks = createBlocks();
+  blocks = createBlocks(currentLevel - 1);
   requestAnimationFrame(loop);
 });
 
@@ -57,12 +65,25 @@ function update(dt) {
     ball.vy = -400;
   }
 
+  if (state === 'levelcomplete' && (keys['Space'] || keys['KeyR'])) {
+    currentLevel++;
+    lives++;
+    blocks = createBlocks(currentLevel - 1);
+    paddle = new Paddle();
+    ball.reset();
+    state = 'ready';
+  }
+
   if (state === 'playing') {
     checkBallBlockCollisions();
     checkBallPaddleCollision();
 
     if (blocks.every(b => b.dead)) {
-      state = 'win';
+      if (currentLevel < 5) {
+        state = 'levelcomplete';
+      } else {
+        state = 'win';
+      }
     }
 
     if (ball.y - ball.radius > canvas.height) {
@@ -101,6 +122,7 @@ function checkBallPaddleCollision() {
 
   ball.y = paddle.y - ball.radius;
   ball.vy = -Math.abs(ball.vy);
+  playBounce();
 
   const hitPos = (ball.x - paddle.x) / paddle.w;
   const angle = (hitPos - 0.5) * 2;
@@ -165,6 +187,10 @@ function drawHUD() {
   ctx.font = '18px monospace';
   ctx.textAlign = 'left';
   ctx.fillText(`Score: ${score}`, 10, 24);
+  if (state === 'ready' || state === 'playing') {
+    ctx.textAlign = 'center';
+    ctx.fillText(`Lvl ${currentLevel}`, canvas.width / 2, 24);
+  }
   ctx.textAlign = 'right';
   ctx.fillText('Vidas:', canvas.width - 10 - lives * 22, 24);
   for (let i = 0; i < lives; i++) {
@@ -178,6 +204,10 @@ function drawHUD() {
     ctx.fillText('Pulsa ESPACIO para lanzar', canvas.width / 2, canvas.height - 15);
   }
 
+  if (state === 'levelcomplete') {
+    drawOverlay(`Level ${currentLevel} Complete! +1 Life`, score, 'Press Space or R to continue');
+  }
+
   if (state === 'gameover') {
     drawOverlay('GAME OVER', score);
   }
@@ -187,18 +217,18 @@ function drawHUD() {
   }
 }
 
-function drawOverlay(title, finalScore) {
+function drawOverlay(title, finalScore, hint = 'R para reiniciar') {
   ctx.fillStyle = 'rgba(0,0,0,0.6)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.textAlign = 'center';
   ctx.fillStyle = '#fff';
-  ctx.font = 'bold 48px monospace';
+  ctx.font = 'bold 36px monospace';
   ctx.fillText(title, canvas.width / 2, canvas.height / 2 - 40);
   ctx.font = '28px monospace';
   ctx.fillText(`Score: ${finalScore}`, canvas.width / 2, canvas.height / 2 + 10);
   ctx.font = '20px monospace';
   ctx.fillStyle = '#aaa';
-  ctx.fillText('R para reiniciar', canvas.width / 2, canvas.height / 2 + 50);
+  ctx.fillText(hint, canvas.width / 2, canvas.height / 2 + 50);
 }
 
 class Paddle {
@@ -253,14 +283,17 @@ class Ball {
     if (this.x - this.radius < 0) {
       this.x = this.radius;
       this.vx = Math.abs(this.vx);
+      playBounce();
     } else if (this.x + this.radius > canvas.width) {
       this.x = canvas.width - this.radius;
       this.vx = -Math.abs(this.vx);
+      playBounce();
     }
 
     if (this.y - this.radius < 0) {
       this.y = this.radius;
       this.vy = Math.abs(this.vy);
+      playBounce();
     }
   }
 
@@ -269,26 +302,76 @@ class Ball {
   }
 }
 
-function createBlocks() {
+const LEVELS = [
+  // Nivel 1: filas sólidas de colores
+  [
+    ['red','red','red','red','red','red','red','red','red','red'],
+    ['hotpink','hotpink','hotpink','hotpink','hotpink','hotpink','hotpink','hotpink','hotpink','hotpink'],
+    ['yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow'],
+    ['cyan','cyan','cyan','cyan','cyan','cyan','cyan','cyan','cyan','cyan'],
+    ['green','green','green','green','green','green','green','green','green','green'],
+  ],
+  // Nivel 2: tablero de ajedrez
+  [
+    ['red',null,'red',null,'red',null,'red',null,'red',null],
+    [null,'yellow',null,'yellow',null,'yellow',null,'yellow',null,'yellow'],
+    ['cyan',null,'cyan',null,'cyan',null,'cyan',null,'cyan',null],
+    [null,'hotpink',null,'hotpink',null,'hotpink',null,'hotpink',null,'hotpink'],
+    ['green',null,'green',null,'green',null,'green',null,'green',null],
+    [null,'magenta',null,'magenta',null,'magenta',null,'magenta',null,'magenta'],
+  ],
+  // Nivel 3: pirámide
+  [
+    [null,null,null,null,'red','red',null,null,null,null],
+    [null,null,null,'yellow','yellow','yellow','yellow',null,null,null],
+    [null,null,'cyan','cyan','cyan','cyan','cyan','cyan',null,null],
+    [null,'hotpink','hotpink','hotpink','hotpink','hotpink','hotpink','hotpink','hotpink',null],
+    ['green','green','green','green','green','green','green','green','green','green'],
+  ],
+  // Nivel 4: marco exterior + cruz interior
+  [
+    ['red','red','red','red','red','red','red','red','red','red'],
+    ['cyan',null,null,null,null,null,null,null,null,'cyan'],
+    ['cyan',null,'yellow',null,'hotpink','hotpink',null,'yellow',null,'cyan'],
+    ['cyan',null,null,null,null,null,null,null,null,'cyan'],
+    ['cyan',null,'yellow',null,'hotpink','hotpink',null,'yellow',null,'cyan'],
+    ['cyan',null,null,null,null,null,null,null,null,'cyan'],
+    ['green','green','green','green','green','green','green','green','green','green'],
+  ],
+  // Nivel 5: diagonales cruzadas
+  [
+    ['red',null,null,null,null,null,null,null,null,'magenta'],
+    [null,'red',null,null,null,null,null,null,'magenta',null],
+    [null,null,'yellow',null,null,null,null,'hotpink',null,null],
+    [null,null,null,'cyan',null,null,'cyan',null,null,null],
+    [null,null,null,null,'green','green',null,null,null,null],
+    [null,null,null,'cyan',null,null,'cyan',null,null,null],
+    [null,null,'yellow',null,null,null,null,'hotpink',null,null],
+    [null,'red',null,null,null,null,null,null,'magenta',null],
+  ],
+];
+
+function createBlocks(levelIndex) {
+  const layout = LEVELS[levelIndex];
   const cols = 10;
-  const rows = 5;
   const bw = 70;
   const bh = 22;
   const gapX = 5;
   const gapY = 5;
   const offsetX = (canvas.width - (cols * bw + (cols - 1) * gapX)) / 2;
   const offsetY = 60;
-  const colors = ['red', 'hotpink', 'yellow', 'cyan', 'green'];
   const result = [];
 
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
+  for (let row = 0; row < layout.length; row++) {
+    for (let col = 0; col < layout[row].length; col++) {
+      const color = layout[row][col];
+      if (color === null) continue;
       result.push({
         x: offsetX + col * (bw + gapX),
         y: offsetY + row * (bh + gapY),
         w: bw,
         h: bh,
-        color: colors[row],
+        color,
         dead: false,
         explosion: null,
       });

@@ -1,6 +1,6 @@
 # SPEC 03 — Sonidos de rebote y progresión de 5 niveles
 
-**Estado:** Aprobado  
+**Estado:** Implementado  
 **Depende de:** SPEC 01, SPEC 02  
 **Fecha:** 2026-11-18  
 **Objetivo:** Reproducir `ball-bounce.mp3` al rebotar en paredes y paleta, y añadir 5 niveles hardcodeados con progresión (pantalla intermedia, +1 vida por nivel, score acumulado).
@@ -84,22 +84,22 @@ Cada paso deja el sistema funcional.
 
 ## Criterios de aceptación
 
-- [ ] `ball-bounce.mp3` suena al rebotar en pared izquierda
-- [ ] `ball-bounce.mp3` suena al rebotar en pared derecha
-- [ ] `ball-bounce.mp3` suena al rebotar en pared superior (techo)
-- [ ] `ball-bounce.mp3` suena al rebotar en la paleta
-- [ ] No suena ningún audio al romper un bloque ni al perder una vida
-- [ ] Existen 5 niveles con layouts visualmente distintos (distinta forma/densidad/colores)
-- [ ] Al destruir todos los bloques de los niveles 1–4 aparece pantalla "Level X Complete"
-- [ ] La pantalla de nivel completado muestra el número de nivel correcto
-- [ ] Space o R en la pantalla "Level X Complete" avanza al nivel siguiente
-- [ ] Al avanzar de nivel `lives` incrementa en 1
-- [ ] El score no se resetea al cambiar de nivel
-- [ ] Al destruir todos los bloques del nivel 5 aparece la pantalla de victoria final (`win`)
-- [ ] El HUD muestra el número de nivel durante `ready` y `playing`
-- [ ] R en `gameover` reinicia al nivel 1 con 3 vidas y score 0
-- [ ] R en `win` reinicia al nivel 1 con 3 vidas y score 0
-- [ ] No hay errores en consola durante toda la partida de 5 niveles
+- [X] `ball-bounce.mp3` suena al rebotar en pared izquierda
+- [X] `ball-bounce.mp3` suena al rebotar en pared derecha
+- [X] `ball-bounce.mp3` suena al rebotar en pared superior (techo)
+- [X] `ball-bounce.mp3` suena al rebotar en la paleta
+- [X] No suena ningún audio al romper un bloque ni al perder una vida
+- [X] Existen 5 niveles con layouts visualmente distintos (distinta forma/densidad/colores)
+- [X] Al destruir todos los bloques de los niveles 1–4 aparece pantalla "Level X Complete"
+- [X] La pantalla de nivel completado muestra el número de nivel correcto
+- [X] Space o R en la pantalla "Level X Complete" avanza al nivel siguiente
+- [X] Al avanzar de nivel `lives` incrementa en 1
+- [X] El score no se resetea al cambiar de nivel
+- [X] Al destruir todos los bloques del nivel 5 aparece la pantalla de victoria final (`win`)
+- [X] El HUD muestra el número de nivel durante `ready` y `playing`
+- [X] R en `gameover` reinicia al nivel 1 con 3 vidas y score 0
+- [X] R en `win` reinicia al nivel 1 con 3 vidas y score 0
+- [x] No hay errores en consola durante toda la partida de 5 niveles
 
 ---
 
